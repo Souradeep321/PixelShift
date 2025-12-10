@@ -18,7 +18,6 @@ interface CloudinaryUploadResult {
     [key: string]: any
 }
 
-
 export async function POST(req: NextRequest) {
     try {
         const { userId } = await auth();
@@ -42,6 +41,23 @@ export async function POST(req: NextRequest) {
         if (!file) {
             return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
         }
+
+        if (!file.type.startsWith("video/")) {
+            return NextResponse.json(
+                { error: "Only video files are allowed" },
+                { status: 400 }
+            );
+        }
+
+        const MAX_SIZE = 100 * 1024 * 1024; // 100MB
+
+        if (file.size > MAX_SIZE) {
+            return NextResponse.json(
+                { error: "Video too large (max 100MB)" },
+                { status: 400 }
+            );
+        }
+
 
         // Convert File → ArrayBuffer → Node Buffer
         const bytes = await file.arrayBuffer();
@@ -85,8 +101,8 @@ export async function POST(req: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-       console.error("Error uploading video:", error);
-       return NextResponse.json({ error: "Error uploading video" }, { status: 500 });
+        console.error("Error uploading video:", error);
+        return NextResponse.json({ error: "Error uploading video" }, { status: 500 });
     }
 }
 
