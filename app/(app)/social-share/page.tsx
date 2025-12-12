@@ -51,8 +51,13 @@ const page = () => {
       toast.success("Image uploaded successfully");
 
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to upload image");
+      const axiosError = error as { response: { data: { message: string } } };
+      console.error("Image upload failed:", error);
+      if (axiosError?.response?.data?.message) {
+        toast.error(axiosError.response.data.message);
+      } else {
+        toast.error("Image upload failed");
+      }
     } finally {
       setIsUploading(false);
     }
