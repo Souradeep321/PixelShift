@@ -68,7 +68,7 @@ const page = () => {
 
     try {
       const response = await axios.get(imageRef.current.src, {
-        responseType: "blob", // ✅ REQUIRED
+        responseType: "blob", 
       });
 
       const blob = response.data;
